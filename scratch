@@ -1,0 +1,12 @@
+python -m llava.serve.cli \
+    --model-path liuhaotian/llava-v1.5-7b \
+    --image-file "https://llava-vl.github.io/static/images/view.jpg" \
+    --load-4bit
+
+
+python -m llava.eval.model_vqa_loader \
+  --model-path liuhaotian/llava-v1.5-13b \
+  --question-file ./playground/data/eval/textvqa/TextVQA_0.5.1_val_subset100.json \
+  --image-folder ./playground/data/eval/textvqa/train_val_images \
+  --answers-file ./playground/data/eval/textvqa/answers/llava-v1.5-7b_subset100.jsonl \
+  --temperature 0 \

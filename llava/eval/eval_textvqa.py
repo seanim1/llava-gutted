@@ -14,22 +14,23 @@ def get_args():
     return parser.parse_args()
 
 
-#def prompt_processor(prompt):
-#    if prompt.startswith('OCR tokens: '):
-#        pattern = r"Question: (.*?) Short answer:"
-#        match = re.search(pattern, prompt, re.DOTALL)
-#        question = match.group(1)
-#    elif 'Reference OCR token: ' in prompt and len(prompt.split('\n')) == 3:
-#        if prompt.startswith('Reference OCR token:'):
-#            question = prompt.split('\n')[1]
-#        else:
-#            question = prompt.split('\n')[0]
-#    elif len(prompt.split('\n')) == 2:
-#        question = prompt.split('\n')[0]
-#    else:
-#        assert False
-#
-#    return question.lower()
+def prompt_processor(prompt):
+    if prompt.startswith('OCR tokens: '):
+        pattern = r"Question: (.*?) Short answer:"
+        match = re.search(pattern, prompt, re.DOTALL)
+        question = match.group(1)
+    elif 'Reference OCR token: ' in prompt and len(prompt.split('\n')) == 3:
+        if prompt.startswith('Reference OCR token:'):
+            question = prompt.split('\n')[1]
+        else:
+            question = prompt.split('\n')[0]
+    elif len(prompt.split('\n')) == 2:
+        question = prompt.split('\n')[0]
+    else:
+        assert False
+
+    return question.lower()
+
 
 def eval_single(annotation_file, result_file):
     experiment_name = os.path.splitext(os.path.basename(result_file))[0]
@@ -42,12 +43,12 @@ def eval_single(annotation_file, result_file):
     index = 0
     annotation_list = list(annotations.items())
     for result in results:
-    # method one (works universally, either out-of-order or in-order)
+    # Method One (works universally, either out-of-order or in-order, but slow)
         #question = result['prompt'] # result is a Python Dictionary variable. "prompt should have the question in it"
         #question_lower = question.lower()  # Convert the question to lowercase, although it is already lowercase.
         # search through the annotations, and if we find a corresponding question, retrieve the annotation.
         #matching_annotation = 0
-        #for key, annotation in annotations.items():
+        #for key, annotation in annotations.items(): # slow bc it is looping through all of annotations... refer to the Method Two
         #    if question == key[1]:  # Check if the question matches
         #        matching_annotation = annotation
         #        break
@@ -57,7 +58,7 @@ def eval_single(annotation_file, result_file):
         #    "pred_answer": result['text'],
         #    "gt_answers": matching_annotation['answers'],
         #})
-    # method two (only works if the result files are in-order, but faster)
+    # Method Two (only works if the result files are in-order, but faster)
         matching_annotation = annotation_list[index][1]
         pred_list.append({
             "pred_answer": result['text'],
